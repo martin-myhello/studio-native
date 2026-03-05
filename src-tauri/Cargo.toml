@@ -1,0 +1,27 @@
+[package]
+name = "studio"
+version = "0.1.0"
+description = "MYHELLO Studio — native shell"
+authors = ["MYHELLO"]
+edition = "2021"
+
+[lib]
+name = "studio_lib"
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["macos-private-api"] }
+tauri-plugin-window-state = "2"
+tauri-plugin-shell = "2"
+tauri-plugin-updater = "2"
+tokio = { version = "1", features = ["time"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+open = "5"
+tauri-plugin-pencilkit = { path = "plugins/pencilkit" }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+cocoa = "0.26"

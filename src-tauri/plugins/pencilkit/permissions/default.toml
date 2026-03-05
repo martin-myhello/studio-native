@@ -1,0 +1,12 @@
+[default]
+description = "Default permissions for PencilKit plugin"
+permissions = [
+    "allow-is-available",
+    "allow-show",
+    "allow-hide",
+    "allow-clear",
+    "allow-get-drawing",
+    "allow-set-drawing",
+    "allow-get-image",
+    "allow-set-tool",
+]
