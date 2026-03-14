@@ -2,25 +2,26 @@
   "$schema": "https://raw.githubusercontent.com/nickelpack/tauri/tauri-v2/crates/tauri-config-schema/schema.json",
   "identifier": "io.myhello.studio",
   "productName": "Studio",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "build": {
-    "frontendDist": "https://studio.myhello.io"
+    "frontendDist": "http://localhost:3000"
   },
   "app": {
     "withGlobalTauri": true,
     "macOSPrivateApi": true,
     "windows": [
       {
-        "url": "https://studio.myhello.io",
+        "url": "http://localhost:3000",
         "title": "Studio",
         "width": 1280,
         "height": 860,
-        "minWidth": 900,
-        "minHeight": 600,
+        "minWidth": 380,
+        "minHeight": 380,
         "decorations": true,
         "titleBarStyle": "Overlay",
         "hiddenTitle": true,
-        "trafficLightPosition": { "x": 16, "y": 24 }
+        "trafficLightPosition": { "x": 16, "y": 24 },
+        "backgroundColor": [255, 255, 255, 255]
       }
     ],
     "security": {

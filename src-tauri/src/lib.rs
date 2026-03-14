@@ -13,9 +13,9 @@ fn setup_macos_window(window: &tauri::WebviewWindow) {
         unsafe {
             let bg_color = NSColor::colorWithSRGBRed_green_blue_alpha_(
                 nil,
-                248.0 / 255.0,
-                247.0 / 255.0,
-                245.0 / 255.0,
+                1.0,
+                1.0,
+                1.0,
                 1.0,
             );
             ns_window.setBackgroundColor_(bg_color);
@@ -28,6 +28,7 @@ const STUDIO_URL: &str = "https://studio.myhello.io";
 /// Returns true if the URL is an allowed domain (myhello.io, supabase, googleapis)
 fn is_allowed_url(url: &str) -> bool {
     let allowed_patterns = [
+        "http://localhost",
         "https://studio.myhello.io",
         "https://myhello.io",
         "https://www.myhello.io",
@@ -87,7 +88,7 @@ fn open_new_window(app: tauri::AppHandle) -> Result<(), String> {
     )
     .title("Studio")
     .inner_size(1280.0, 860.0)
-    .min_inner_size(900.0, 600.0)
+    .min_inner_size(380.0, 380.0)
     .decorations(true)
     .hidden_title(true)
     .title_bar_style(tauri::TitleBarStyle::Overlay)

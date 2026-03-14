@@ -1,6 +1,6 @@
 [package]
 name = "studio"
-version = "0.2.0"
+version = "0.3.0"
 description = "MYHELLO Studio — native shell"
 authors = ["MYHELLO"]
 edition = "2021"
