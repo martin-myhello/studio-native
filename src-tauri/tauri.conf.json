@@ -4,14 +4,14 @@
   "productName": "Studio",
   "version": "0.3.0",
   "build": {
-    "frontendDist": "http://localhost:3000"
+    "frontendDist": "https://studio.myhello.io"
   },
   "app": {
     "withGlobalTauri": true,
     "macOSPrivateApi": true,
     "windows": [
       {
-        "url": "http://localhost:3000",
+        "url": "https://studio.myhello.io",
         "title": "Studio",
         "width": 1280,
         "height": 860,
