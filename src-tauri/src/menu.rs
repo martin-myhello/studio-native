@@ -14,8 +14,11 @@ pub fn setup_menu(app: &App) -> Result<(), Box<dyn std::error::Error>> {
     let hide_others = PredefinedMenuItem::hide_others(app, None)?;
     let show_all = PredefinedMenuItem::show_all(app, None)?;
     let quit = PredefinedMenuItem::quit(app, None)?;
+    let check_update = MenuItemBuilder::with_id("check_update", "Check for Updates...")
+        .build(app)?;
     let app_menu = SubmenuBuilder::new(app, "Studio")
         .item(&about)
+        .item(&check_update)
         .separator()
         .item(&settings)
         .separator()
@@ -153,6 +156,14 @@ pub fn setup_menu(app: &App) -> Result<(), Box<dyn std::error::Error>> {
     app.on_menu_event(move |_app, event| {
         let id = event.id().0.as_str();
         match id {
+            // Check for updates
+            "check_update" => {
+                let handle = app_handle.clone();
+                tauri::async_runtime::spawn(async move {
+                    let _ = crate::updater::check_for_updates(handle).await;
+                });
+            }
+
             // Navigate actions → emit to webview
             "settings" => emit_menu_action(&app_handle, "navigate", Some("settings")),
             "go_files" => emit_menu_action(&app_handle, "navigate", Some("files")),
