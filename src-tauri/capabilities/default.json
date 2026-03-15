@@ -3,7 +3,8 @@
   "description": "Default capability for the main window",
   "windows": [
     "main",
-    "studio-*"
+    "studio-*",
+    "browser-*"
   ],
   "remote": {
     "urls": [

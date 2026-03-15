@@ -30,12 +30,18 @@ pub fn setup_menu(app: &App) -> Result<(), Box<dyn std::error::Error>> {
     let new_window = MenuItemBuilder::with_id("new_window", "New Window")
         .accelerator("CmdOrCtrl+N")
         .build(app)?;
-    let close = PredefinedMenuItem::close_window(app, None)?;
+    let new_tab = MenuItemBuilder::with_id("new_tab", "New Tab")
+        .accelerator("CmdOrCtrl+T")
+        .build(app)?;
+    let close_tab = MenuItemBuilder::with_id("close_tab", "Close Tab")
+        .accelerator("CmdOrCtrl+W")
+        .build(app)?;
 
     let file_menu = SubmenuBuilder::new(app, "File")
         .item(&new_window)
+        .item(&new_tab)
         .separator()
-        .item(&close)
+        .item(&close_tab)
         .build()?;
 
     // --- Edit menu ---
@@ -112,11 +118,20 @@ pub fn setup_menu(app: &App) -> Result<(), Box<dyn std::error::Error>> {
     let minimize = PredefinedMenuItem::minimize(app, None)?;
     let zoom = PredefinedMenuItem::maximize(app, None)?;
     let fullscreen = PredefinedMenuItem::fullscreen(app, None)?;
+    let next_tab = MenuItemBuilder::with_id("next_tab", "Show Next Tab")
+        .accelerator("CmdOrCtrl+Shift+]")
+        .build(app)?;
+    let prev_tab = MenuItemBuilder::with_id("prev_tab", "Show Previous Tab")
+        .accelerator("CmdOrCtrl+Shift+[")
+        .build(app)?;
 
     let window_menu = SubmenuBuilder::new(app, "Window")
         .item(&minimize)
         .item(&zoom)
         .item(&fullscreen)
+        .separator()
+        .item(&next_tab)
+        .item(&prev_tab)
         .build()?;
 
     // Build final menu
@@ -182,11 +197,88 @@ pub fn setup_menu(app: &App) -> Result<(), Box<dyn std::error::Error>> {
                 }
             }
 
+            // Browser tab shortcuts
+            "new_tab" => {
+                #[cfg(target_os = "macos")]
+                if let Some(label) = get_focused_browser_label(&app_handle) {
+                    crate::browser::tabs::create_new_tab(&label, None);
+                }
+            }
+            "close_tab" => {
+                #[cfg(target_os = "macos")]
+                {
+                    if let Some(label) = get_focused_browser_label(&app_handle) {
+                        let state = crate::browser::state::BROWSER_STATE.lock().unwrap();
+                        if let Some(window) = state.windows.get(&label) {
+                            let idx = window.active_tab;
+                            let tab_count = window.tabs.len();
+                            drop(state);
+                            if tab_count <= 1 {
+                                // Close the browser window
+                                if let Some(w) = app_handle.get_window(&label) {
+                                    let _ = w.close();
+                                }
+                            } else {
+                                crate::browser::tabs::close_tab(&label, idx);
+                            }
+                        }
+                    } else {
+                        // Not a browser window — close the focused window
+                        if let Some(w) = app_handle.get_focused_window() {
+                            let _ = w.close();
+                        }
+                    }
+                }
+                #[cfg(not(target_os = "macos"))]
+                {
+                    if let Some(w) = app_handle.get_focused_window() {
+                        let _ = w.close();
+                    }
+                }
+            }
+            "next_tab" => {
+                #[cfg(target_os = "macos")]
+                if let Some(label) = get_focused_browser_label(&app_handle) {
+                    let state = crate::browser::state::BROWSER_STATE.lock().unwrap();
+                    if let Some(window) = state.windows.get(&label) {
+                        let next = (window.active_tab + 1) % window.tabs.len();
+                        drop(state);
+                        crate::browser::tabs::switch_tab(&label, next);
+                    }
+                }
+            }
+            "prev_tab" => {
+                #[cfg(target_os = "macos")]
+                if let Some(label) = get_focused_browser_label(&app_handle) {
+                    let state = crate::browser::state::BROWSER_STATE.lock().unwrap();
+                    if let Some(window) = state.windows.get(&label) {
+                        let prev = if window.active_tab == 0 {
+                            window.tabs.len() - 1
+                        } else {
+                            window.active_tab - 1
+                        };
+                        drop(state);
+                        crate::browser::tabs::switch_tab(&label, prev);
+                    }
+                }
+            }
+
             _ => {}
         }
     });
 
     Ok(())
+}
+
+/// Returns the label of the focused browser window, if any.
+fn get_focused_browser_label(app: &tauri::AppHandle) -> Option<String> {
+    let focused = app.get_focused_window()?;
+    let label = focused.label().to_string();
+    if label.starts_with("browser-") {
+        Some(label)
+    } else {
+        None
+    }
 }
 
 fn emit_menu_action(app: &tauri::AppHandle, action: &str, tab: Option<&str>) {

@@ -1,3 +1,5 @@
+#[cfg(target_os = "macos")]
+mod browser;
 mod menu;
 mod updater;
 
@@ -119,6 +121,22 @@ pub fn run() {
             updater::check_for_updates,
             updater::download_update,
             updater::install_update,
+            #[cfg(target_os = "macos")]
+            browser::commands::open_browser_window,
+            #[cfg(target_os = "macos")]
+            browser::commands::browser_navigate,
+            #[cfg(target_os = "macos")]
+            browser::commands::browser_go_back,
+            #[cfg(target_os = "macos")]
+            browser::commands::browser_go_forward,
+            #[cfg(target_os = "macos")]
+            browser::commands::browser_get_page_info,
+            #[cfg(target_os = "macos")]
+            browser::commands::browser_new_tab,
+            #[cfg(target_os = "macos")]
+            browser::commands::browser_close_tab,
+            #[cfg(target_os = "macos")]
+            browser::commands::browser_switch_tab,
         ])
         .setup(|app| {
             let window = app.get_webview_window("main").unwrap();

@@ -13,7 +13,7 @@ crate-type = ["lib", "cdylib", "staticlib"]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "2", features = ["macos-private-api"] }
+tauri = { version = "2", features = ["macos-private-api", "unstable"] }
 tauri-plugin-window-state = "2"
 tauri-plugin-shell = "2"
 tauri-plugin-updater = "2"
@@ -25,3 +25,6 @@ tauri-plugin-pencilkit = { path = "plugins/pencilkit" }
 
 [target.'cfg(target_os = "macos")'.dependencies]
 cocoa = "0.26"
+objc = "0.2"
+block = "0.1"
+core-foundation = "0.10"
